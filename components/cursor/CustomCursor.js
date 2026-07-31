@@ -30,6 +30,10 @@ export default function CustomCursor() {
     const dot = dotRef.current;
     const ring = ringRef.current;
 
+    // Set GSAP centering coordinates (equivalent to translate(-50%, -50%))
+    gsap.set(dot, { xPercent: -50, yPercent: -50 });
+    gsap.set(ring, { xPercent: -50, yPercent: -50 });
+
     // Quick setters for smooth animations
     const xDot = gsap.quickTo(dot, "x", { duration: 0.1, ease: "power3.out" });
     const yDot = gsap.quickTo(dot, "y", { duration: 0.1, ease: "power3.out" });
@@ -107,7 +111,7 @@ export default function CustomCursor() {
       {/* Outer Ring */}
       <div
         ref={ringRef}
-        className={`fixed top-0 left-0 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none transition-all duration-300 ease-out flex items-center justify-center ${ringClasses}`}
+        className={`fixed top-0 left-0 rounded-full pointer-events-none transition-[width,height,background-color,border-color,opacity] duration-300 ease-out flex items-center justify-center ${ringClasses}`}
       >
         {labelText && (
           <span
@@ -122,7 +126,7 @@ export default function CustomCursor() {
       {/* Inner Dot */}
       <div
         ref={dotRef}
-        className={`fixed top-0 left-0 w-2 h-2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none transition-transform duration-300 ease-out ${dotClasses}`}
+        className={`fixed top-0 left-0 w-2 h-2 rounded-full pointer-events-none transition-[width,height,background-color,opacity] duration-300 ease-out ${dotClasses}`}
       />
     </div>
   );

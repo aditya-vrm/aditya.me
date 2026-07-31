@@ -32,7 +32,7 @@ export function useLenis() {
     gsap.ticker.add(updateTicker);
 
     // Disable GSAP lag smoothing to prevent scroll desync
-    ScrollTrigger.lagSmoothing(0);
+    gsap.ticker.lagSmoothing(0);
 
     return () => {
       lenis.destroy();

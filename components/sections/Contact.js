@@ -105,12 +105,12 @@ export default function Contact() {
               <div className="flex items-center gap-4">
                 <SocialButton
                   href="https://www.linkedin.com/in/aditya-v27"
-                  icon={<Linkedin className="w-5 h-5" />}
+                  icon={<LinkedinIcon className="w-5 h-5" />}
                   label="LinkedIn"
                 />
                 <SocialButton
                   href="https://github.com/aditya-vrm"
-                  icon={<Github className="w-5 h-5" />}
+                  icon={<GithubIcon className="w-5 h-5" />}
                   label="GitHub"
                 />
                 <SocialButton
