@@ -56,14 +56,14 @@ function DistortedSphere() {
   });
 
   return (
-    <mesh ref={meshRef} scale={1.5}>
+    <mesh ref={meshRef} scale={1.0}>
       <sphereGeometry args={[1, 64, 64]} />
       <MeshDistortMaterial
         color="#D97706"
-        roughness={0.15}
-        metalness={0.8}
-        distort={0.4}
-        speed={1.5}
+        roughness={0.50}
+        metalness={0.6}
+        distort={0.43}
+        speed={0.20}
         radius={1}
       />
     </mesh>

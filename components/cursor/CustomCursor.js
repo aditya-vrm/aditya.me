@@ -82,8 +82,6 @@ export default function CustomCursor() {
     };
   }, []);
 
-  if (hidden) return null;
-
   // Set style based on hover type
   let ringClasses = "border border-accent ";
   let dotClasses = "bg-accent ";
@@ -107,7 +105,11 @@ export default function CustomCursor() {
   }
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-9999 mix-blend-normal">
+    <div 
+      className={`fixed inset-0 pointer-events-none z-9999 mix-blend-normal transition-opacity duration-300 ${
+        hidden ? "opacity-0" : "opacity-100"
+      }`}
+    >
       {/* Outer Ring */}
       <div
         ref={ringRef}

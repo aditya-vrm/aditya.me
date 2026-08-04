@@ -7,105 +7,146 @@ import { gsap } from "@/lib/gsap";
 
 export default function Loader({ onComplete }) {
   const containerRef = useRef(null);
-  const [index, setIndex] = useState(0);
+  const leftPanelRef = useRef(null);
+  const rightPanelRef = useRef(null);
+  const contentRef = useRef(null);
+  const [progress, setProgress] = useState(0);
   const [assetsLoaded, setAssetsLoaded] = useState(false);
-  const [cycleCompleted, setCycleCompleted] = useState(false);
-
+  const [exitTriggered, setExitTriggered] = useState(false);
+ 
   // 1. Detect asset loading
   useEffect(() => {
     if (typeof window === "undefined") return;
-
+ 
     const checkLoading = async () => {
       try {
-        // Wait for fonts to be ready
         if (document.fonts) {
           await document.fonts.ready;
         }
-        
-        // Wait for Hero image placeholder if any, or any R3F dependencies
-        // We simulate a tiny delay to ensure critical layouts are ready
+        // Simulated layout render delay
         setTimeout(() => {
           setAssetsLoaded(true);
         }, 800);
       } catch (err) {
         console.error("Asset loading check failed:", err);
-        setAssetsLoaded(true); // Fail-safe
+        setAssetsLoaded(true);
       }
     };
-
+ 
     checkLoading();
   }, []);
-
-  // 2. Cycle through languages
+ 
+  // 2. Count up progress from 0 to 100 uniformly
   useEffect(() => {
-    if (cycleCompleted && assetsLoaded) {
-      // Trigger Exit Curtain wipe
-      gsap.to(containerRef.current, {
-        yPercent: -100,
-        duration: 1.2,
-        ease: "power4.inOut",
-        onComplete: () => {
-          onComplete();
-        }
-      });
+    if (progress >= 100) {
+      if (assetsLoaded && !exitTriggered) {
+        setExitTriggered(true);
+        
+        // 1. First fade out the loader content smoothly
+        gsap.to(contentRef.current, {
+          opacity: 0,
+          duration: 0.45,
+          ease: "power2.out",
+          onComplete: () => {
+            // 2. Then split the panels (left goes up, right goes down)
+            const tl = gsap.timeline({
+              onComplete: () => {
+                onComplete();
+              }
+            });
+ 
+            tl.to(leftPanelRef.current, {
+              borderBottomRightRadius: "300px",
+              yPercent: -100,
+              duration: 1.2,
+              ease: "power4.inOut"
+            }, 0);
+ 
+            tl.to(rightPanelRef.current, {
+              borderTopLeftRadius: "300px",
+              yPercent: 100,
+              duration: 1.2,
+              ease: "power4.inOut"
+            }, 0);
+          }
+        });
+      }
       return;
     }
-
+ 
     const interval = setInterval(() => {
-      setIndex((prevIndex) => {
-        if (prevIndex === LANGUAGES.length - 1) {
+      setProgress((prev) => {
+        if (prev >= 100) {
           clearInterval(interval);
-          setCycleCompleted(true);
-          return prevIndex;
+          return 100;
         }
-        return prevIndex + 1;
+        // Pause at 99% if assets aren't loaded yet
+        if (prev === 99 && !assetsLoaded) {
+          return 99;
+        }
+        return prev + 1;
       });
-    }, 180); // Rapid, smooth cycles
-
+    }, 40); // 100 steps * 40ms = 4 seconds uniform run time
+ 
     return () => clearInterval(interval);
-  }, [cycleCompleted, assetsLoaded, onComplete]);
-
-  // Fallback trigger if cycle is done but assets are still loading
-  useEffect(() => {
-    if (cycleCompleted && !assetsLoaded) {
-      const timeout = setTimeout(() => {
-        setAssetsLoaded(true); // Force finish after 2.5s to not block user forever
-      }, 2000);
-      return () => clearTimeout(timeout);
-    }
-  }, [cycleCompleted, assetsLoaded]);
-
+  }, [progress, assetsLoaded, exitTriggered, onComplete]);
+ 
+  // Map progress directly to index to give every text identical timing (500ms per word)
+  const index = Math.min(
+    Math.floor((progress / 100) * LANGUAGES.length),
+    LANGUAGES.length - 1
+  );
+ 
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-background"
+      className="fixed inset-0 z-50 overflow-hidden select-none"
     >
-      <div className="flex flex-col items-center justify-center overflow-hidden h-24 md:h-32">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={index}
-            initial={{ y: "80%", opacity: 0, rotateX: -45 }}
-            animate={{ y: "0%", opacity: 1, rotateX: 0 }}
-            exit={{ y: "-80%", opacity: 0, rotateX: 45 }}
-            transition={{ duration: 0.16, ease: "easeInOut" }}
-            style={{ color: LANGUAGES[index].color }}
-            className="text-4xl md:text-7xl font-extrabold text-center select-none font-display tracking-tight"
-          >
-            {/* Dot symbol decoration */}
-            <span className="inline-block mr-3 w-3 h-3 rounded-full bg-current align-middle opacity-50" />
-            {LANGUAGES[index].text}
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      {/* Progress Line Indicator at the bottom */}
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-48 h-[2px] bg-black/5 overflow-hidden">
-        <motion.div
-          className="h-full bg-accent"
-          initial={{ width: "0%" }}
-          animate={{ width: cycleCompleted ? "100%" : `${((index + 1) / LANGUAGES.length) * 100}%` }}
-          transition={{ duration: 0.15 }}
-        />
+      {/* Left split panel */}
+      <div
+        ref={leftPanelRef}
+        className="absolute top-0 left-0 w-1/2 h-full bg-[#0A0A0A] z-10"
+      />
+      {/* Right split panel */}
+      <div
+        ref={rightPanelRef}
+        className="absolute top-0 right-0 w-1/2 h-full bg-[#0A0A0A] z-10"
+      />
+ 
+      {/* Content wrapper sitting above panels */}
+      <div
+        ref={contentRef}
+        className="absolute inset-0 flex flex-col items-center justify-center z-20"
+      >
+        {/* Greetings Text Container (Relative wrapper for seamless absolute transitions) */}
+        <div className="relative w-full h-24 md:h-32 flex items-center justify-center overflow-hidden">
+          <AnimatePresence>
+            <motion.div
+              key={index}
+              initial={{ y: "80%", opacity: 0, rotateX: -30 }}
+              animate={{ y: "0%", opacity: 1, rotateX: 0 }}
+              exit={{ y: "-80%", opacity: 0, rotateX: 30 }}
+              transition={{ duration: 0.45, ease: [0.25, 1, 0.5, 1] }} // Smooth, organic ease
+              style={{ color: LANGUAGES[index].color }}
+              className="absolute inset-0 flex items-center justify-center text-4xl md:text-7xl font-extrabold text-center select-none font-display tracking-tight"
+            >
+              {/* Dot symbol decoration */}
+              <span className="inline-block mr-3 w-3 h-3 rounded-full bg-current align-middle opacity-50" />
+              {LANGUAGES[index].text}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+ 
+        {/* Percentage Count-up Indicator */}
+        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-center">
+          <p className="font-mono text-5xl md:text-7xl font-black text-white/90 tracking-tighter select-none">
+            {progress}
+            <span className="text-accent text-2xl md:text-4xl ml-1 font-bold">%</span>
+          </p>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-white/50 mt-2 block opacity-40">
+            Loading
+          </span>
+        </div>
       </div>
     </div>
   );

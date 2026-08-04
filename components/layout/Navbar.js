@@ -6,7 +6,6 @@ import { useMagnetic } from "@/hooks/useMagnetic";
 
 export default function Navbar() {
   const [activeSection, setActiveSection] = useState("");
-  const logoRef = useMagnetic(0.4);
 
   // Intersection Observer for Active Section Tracking
   useEffect(() => {
@@ -49,22 +48,10 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-[90vw] md:max-w-lg">
-      <div className="flex items-center justify-between w-full px-5 py-3 rounded-full bg-glass-bg border border-glass-border backdrop-blur-md shadow-lg shadow-black/5 hover:border-accent/30 transition-colors duration-300">
-        
-        {/* Magnetic Logo */}
-        <div ref={logoRef} className="flex items-center">
-          <a
-            href="#"
-            onClick={(e) => handleScroll(e, "#hero")}
-            className="flex items-center justify-center w-9 h-9 rounded-full bg-accent text-white font-black text-sm tracking-tighter"
-          >
-            AV
-          </a>
-        </div>
-
+    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-[90vw] md:max-w-xs">
+      <div className="flex items-center justify-center w-full px-4 py-2.5 rounded-full bg-glass-bg border border-glass-border backdrop-blur-md shadow-lg shadow-black/5 hover:border-accent/30 transition-colors duration-300">
         {/* Navigation Links */}
-        <div className="flex items-center gap-1 md:gap-2">
+        <div className="flex items-center gap-1 md:gap-1.5">
           {NAV_LINKS.map((link) => {
             const isActive = activeSection === link.href;
             return (
