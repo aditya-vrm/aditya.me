@@ -201,6 +201,16 @@ export default function Archive({ loaderComplete }) {
             className={`absolute top-1/2 left-[25%] -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full blur-[140px] pointer-events-none -z-10 transition-all duration-1000 ease-in-out ${getGlowColor(activeIndex)}`} 
           />
 
+          {/* Section Header */}
+          <div className="absolute top-12 left-6 md:left-12 z-30 select-text">
+            <span className="text-[10px] uppercase font-extrabold tracking-widest text-accent mb-2 block">
+              Featured Work
+            </span>
+            <h2 className="text-3xl md:text-5xl font-medium tracking-tight text-white font-display">
+              My <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-amber-500">Projects</span>.
+            </h2>
+          </div>
+
           <div className="max-w-7xl mx-auto px-6 md:px-12 w-full h-full flex flex-row items-stretch relative z-10">
             
             {/* Left Column: device Showcase (50% width, remains centered in viewport) */}
