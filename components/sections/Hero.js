@@ -1,12 +1,14 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import FloatingHeroTags from "../physics/FloatingHeroTags";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 
-export default function Hero() {
+export default function Hero({ loaderComplete }) {
   const cardRef = useRef(null);
+  const heroRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
 
   // Calculate coordinates in pixels relative to the card container
@@ -23,10 +25,58 @@ export default function Hero() {
     card.style.setProperty("--mouse-y", `${y}px`);
   };
 
+  useEffect(() => {
+    if (!loaderComplete) return;
+
+    // Allow DOM to settle and refresh ScrollTrigger coordinates safely
+    const timer = setTimeout(() => {
+      const paths = document.querySelectorAll(".hero-connecting-path");
+      if (!paths.length) return;
+
+      // Set initial dash settings to hide the paths
+      paths.forEach((p) => {
+        const len = p.getTotalLength();
+        p.style.strokeDasharray = `${len}px`;
+        p.style.strokeDashoffset = `${len}px`;
+      });
+
+      // Create scroll timeline to draw the line as we scroll down the Hero section
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: "top top",
+          end: "+=120%",
+          scrub: 0.5,
+          pin: true,
+          pinSpacing: true,
+        }
+      });
+
+      paths.forEach((p) => {
+        tl.to(p, {
+          strokeDashoffset: 0,
+          ease: "none"
+        }, 0);
+      });
+
+      ScrollTrigger.refresh();
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      ScrollTrigger.getAll().forEach(t => {
+        if (t.vars.trigger === heroRef.current) {
+          t.kill();
+        }
+      });
+    };
+  }, [loaderComplete]);
+
   return (
     <section
+      ref={heroRef}
       id="hero"
-      className="min-h-screen w-full flex flex-col justify-center items-center relative py-20 px-6 md:px-12 select-none overflow-hidden bg-background"
+      className="min-h-screen w-full flex flex-col justify-center items-center relative py-20 px-6 md:px-12 select-none overflow-hidden bg-background z-10"
     >
       {/* Soft Blurry Ambient Gradient Blobs (Background) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 opacity-70">
@@ -92,10 +142,11 @@ export default function Hero() {
           onMouseMove={handleMouseMove}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          initial={{ opacity: 0, scale: 0.8, rotate: -3 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
+          animate={{ opacity: 1, scale: 1, rotate: 3 }}
           transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute top-[52%] left-[62%] sm:left-[58%] md:left-[55%] -translate-x-1/2 -translate-y-1/2 w-32 sm:w-40 md:w-56 aspect-[9/16] rounded-2xl overflow-hidden border border-white/20 bg-white/10 backdrop-blur-md p-1.5 shadow-2xl hover:scale-[1.05] hover:rotate-2 transition-all duration-500 z-20 cursor-none"
+          style={{ transformOrigin: "bottom right" }}
+          className="absolute top-[52%] left-[68%] sm:left-[64%] md:left-[60%] -translate-x-1/2 -translate-y-1/2 w-32 sm:w-40 md:w-56 aspect-[9/16] rounded-2xl overflow-hidden border border-white/20 bg-white/10 backdrop-blur-md p-1.5 shadow-2xl hover:scale-[1.05] hover:rotate-[7deg] transition-all duration-500 z-20 cursor-none"
         >
           <div className="relative w-full h-full rounded-xl overflow-hidden bg-gray-100/50">
             {/* Base Portrait Image */}
@@ -147,6 +198,53 @@ export default function Hero() {
         </motion.div>
       </div>
 
+      {/* Desktop/Tablet line (MD and up): Rolls around the name starting from 'A' */}
+      <div className="absolute inset-0 pointer-events-none z-10 overflow-visible hidden md:block">
+        <svg className="w-full h-full" viewBox="0 0 1440 900" fill="none" preserveAspectRatio="none">
+          {/* Subtle glowing filter path */}
+          <path
+            className="hero-connecting-path opacity-20 blur-[3px]"
+            d="M 240,310 C 460,300 580,300 680,310 C 730,320 730,360 700,380 C 600,410 400,410 260,410 C 200,410 350,470 500,470 C 700,470 1000,460 1180,470 C 1230,480 1230,540 1200,560 C 1000,600 850,610 720,640 C 720,700 720,800 720,900"
+            stroke="var(--color-accent, #F59E0B)"
+            strokeWidth="5"
+            strokeLinecap="round"
+            style={{ vectorEffect: "non-scaling-stroke" }}
+          />
+          {/* Main solid path */}
+          <path
+            className="hero-connecting-path"
+            d="M 240,310 C 460,300 580,300 680,310 C 730,320 730,360 700,380 C 600,410 400,410 260,410 C 200,410 350,470 500,470 C 700,470 1000,460 1180,470 C 1230,480 1230,540 1200,560 C 1000,600 850,610 720,640 C 720,700 720,800 720,900"
+            stroke="var(--color-accent, #F59E0B)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            style={{ vectorEffect: "non-scaling-stroke" }}
+          />
+        </svg>
+      </div>
+
+      {/* Mobile line (Below MD): Simpler path from the card region straight down to center */}
+      <div className="absolute inset-x-0 bottom-0 top-[70vh] pointer-events-none z-10 overflow-visible md:hidden">
+        <svg className="w-full h-full" viewBox="0 0 375 200" fill="none" preserveAspectRatio="none">
+          {/* Subtle glowing filter path */}
+          <path
+            className="hero-connecting-path opacity-20 blur-[3px]"
+            d="M 240,0 C 200,80, 187.5,100, 187.5,200"
+            stroke="var(--color-accent, #F59E0B)"
+            strokeWidth="5"
+            strokeLinecap="round"
+            style={{ vectorEffect: "non-scaling-stroke" }}
+          />
+          {/* Main solid path */}
+          <path
+            className="hero-connecting-path"
+            d="M 240,0 C 200,80, 187.5,100, 187.5,200"
+            stroke="var(--color-accent, #F59E0B)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            style={{ vectorEffect: "non-scaling-stroke" }}
+          />
+        </svg>
+      </div>
     </section>
   );
 }
