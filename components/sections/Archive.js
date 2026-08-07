@@ -4,13 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { PROJECTS } from "@/lib/constants";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
-import { useMagnetic } from "@/hooks/useMagnetic";
 import ScrollReveal from "../ui/ScrollReveal";
 import { ExternalLink } from "lucide-react";
 
-export default function Archive() {
-  const triggerRef = useRef(null);
-  const wrapRef = useRef(null);
+export default function Archive({ loaderComplete }) {
+  const containerRef = useRef(null);
+  const scrollWrapRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [isMobileOrTouch, setIsMobileOrTouch] = useState(false);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ export default function Archive() {
 
     // Detect touch or small screen
     const checkTouch = () => {
-      const match = window.matchMedia("(max-width: 768px), (hover: none)").matches;
+      const match = window.matchMedia("(max-width: 1024px), (hover: none)").matches;
       setIsMobileOrTouch(match);
     };
 
@@ -29,40 +29,85 @@ export default function Archive() {
   }, []);
 
   useEffect(() => {
-    if (isMobileOrTouch) return;
+    if (!loaderComplete || isMobileOrTouch) return;
 
-    const wrap = wrapRef.current;
-    const trigger = triggerRef.current;
-    if (!wrap || !trigger) return;
+    let ctx;
+    const timer = setTimeout(() => {
+      const scrollWrap = scrollWrapRef.current;
+      const container = containerRef.current;
+      if (!scrollWrap || !container) return;
 
-    // Calculate how much the container needs to translate horizontally
-    const scrollAmount = wrap.scrollWidth - window.innerWidth;
-    if (scrollAmount <= 0) return;
+      const projectsCount = PROJECTS.length;
 
-    // GSAP context to handle cleanups
-    const ctx = gsap.context(() => {
-      gsap.to(wrap, {
-        x: -scrollAmount,
-        ease: "none",
-        scrollTrigger: {
-          trigger: trigger,
-          pin: true,
-          scrub: 1, // Sync translation 1:1 with scroll position
-          start: "top top",
-          end: () => `+=${scrollAmount}`,
-          invalidateOnRefresh: true,
-        }
-      });
-    }, trigger);
+      // GSAP context to handle cleanups
+      ctx = gsap.context(() => {
+        // Pin the entire section and slide the right text column up
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: container,
+            start: "top top",
+            end: `+=${projectsCount * 100}%`,
+            scrub: 0.5,
+            pin: true,
+            pinSpacing: true,
+            onUpdate: (self) => {
+              const progress = self.progress;
+              const activeIdx = Math.min(
+                projectsCount - 1,
+                Math.floor(progress * (projectsCount + 0.1)) // slight padding to make last card linger
+              );
+              setActiveIndex(activeIdx);
+            }
+          }
+        });
 
-    return () => ctx.revert();
-  }, [isMobileOrTouch]);
+        // Translate the vertical details column upward
+        tl.to(scrollWrap, {
+          yPercent: -80, // brings the 5th project detail block to the center
+          ease: "none",
+        }, 0);
+
+        // Draw the curvy connecting line in the Archive section dynamically
+        const paths = document.querySelectorAll(".archive-connecting-path");
+        paths.forEach((p) => {
+          const len = p.getTotalLength();
+          p.style.strokeDasharray = `${len}px`;
+          p.style.strokeDashoffset = `${len}px`;
+          
+          tl.to(p, {
+            strokeDashoffset: 0,
+            ease: "none",
+          }, 0);
+        });
+
+      }, container);
+
+      ScrollTrigger.refresh();
+    }, 200);
+
+    return () => {
+      clearTimeout(timer);
+      if (ctx) ctx.revert();
+    };
+  }, [isMobileOrTouch, loaderComplete]);
+
+  // Accent glow matching each project brand
+  const getGlowColor = (index) => {
+    switch (index) {
+      case 0: return "bg-amber-500/10";      // Virtual Mouse
+      case 1: return "bg-indigo-500/10";     // GoldenHire
+      case 2: return "bg-pink-500/10";       // Click1Studio
+      case 3: return "bg-emerald-500/10";    // DevHub
+      case 4: return "bg-cyan-500/10";       // Moody Player
+      default: return "bg-accent/10";
+    }
+  };
 
   return (
-    <div id="archive" className="bg-background select-text border-t border-black/5">
+    <div id="archive" className="select-text overflow-visible relative">
       {isMobileOrTouch ? (
-        // Mobile Layout: Normal Horizontal Swipeable Carousel
-        <section className="py-24 px-6 w-full max-w-7xl mx-auto flex flex-col justify-start">
+        // Mobile Layout: Normal Horizontal Swipeable Carousel (Light theme matches previous)
+        <section className="py-24 px-6 w-full max-w-7xl mx-auto flex flex-col justify-start bg-background border-t border-black/5">
           <div className="mb-12">
             <span className="text-xs uppercase font-extrabold tracking-widest text-accent mb-3 block">
               Featured Work
@@ -75,139 +120,200 @@ export default function Archive() {
           {/* Swipe Container */}
           <div className="flex overflow-x-auto gap-6 snap-x snap-mandatory scrollbar-none pb-8 pr-6">
             {PROJECTS.map((project) => (
-              <div
+              <a
                 key={project.id}
-                className="snap-start shrink-0 w-[85vw] max-w-[340px] rounded-3xl border border-black/5 bg-white shadow-sm overflow-hidden flex flex-col"
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="snap-start shrink-0 w-[85vw] max-w-[340px] rounded-3xl border border-black/5 bg-white shadow-sm overflow-hidden flex flex-col group"
               >
-                <div className="relative aspect-video w-full bg-gray-100">
+                <div className="relative aspect-video w-full bg-gray-50 border-b border-black/5">
                   <Image
                     src={project.image}
                     alt={project.title}
                     fill
                     sizes="340px"
-                    className="object-cover grayscale"
+                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
+                    unoptimized={true}
                   />
                 </div>
-                <div className="p-6 flex flex-col flex-1 justify-between">
+                <div className="p-6 flex flex-col flex-1 justify-between bg-white">
                   <div>
-                    <h3 className="text-lg font-bold text-foreground">{project.title}</h3>
-                    <p className="text-xs text-muted font-medium mt-1 uppercase tracking-wider">{project.subtitle}</p>
-                    <p className="text-sm text-muted mt-3 leading-relaxed line-clamp-3">{project.description}</p>
+                    <h3 className="text-lg font-bold text-foreground group-hover:text-accent transition-colors duration-300">
+                      {project.title}
+                    </h3>
+                    <p className="text-[10px] text-muted font-mono uppercase mt-1 tracking-wider">
+                      {project.subtitle}
+                    </p>
+                    <p className="text-xs text-muted/80 mt-3 leading-relaxed line-clamp-3 font-light">
+                      {project.description}
+                    </p>
                   </div>
                   <div className="mt-6 flex flex-col gap-4">
                     <div className="flex flex-wrap gap-1.5">
                       {project.tags.slice(0, 3).map((tag, tIdx) => (
-                        <span key={tIdx} className="text-[10px] px-2 py-0.5 bg-black/[0.03] text-muted rounded font-semibold uppercase">
+                        <span key={tIdx} className="text-[8px] px-2 py-0.5 bg-black/[0.03] text-muted rounded font-semibold uppercase">
                           {tag}
                         </span>
                       ))}
                     </div>
-                    <button className="w-full py-2.5 rounded-xl bg-accent text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5">
+                    <div className="w-full py-2.5 rounded-xl bg-accent text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5">
                       <span>View Project</span>
                       <ExternalLink className="w-3.5 h-3.5" />
-                    </button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </section>
       ) : (
-        // Desktop Layout: GSAP Scroll-Jack Horizontal Translation
-        <section ref={triggerRef} className="relative z-10">
-          <div className="h-screen sticky top-0 overflow-hidden flex flex-col justify-center">
+        // Desktop Layout: Awwwards-style Split Screen Showroom (Dark theme background)
+        <section 
+          ref={containerRef} 
+          className="min-h-screen w-full relative bg-[#060608] flex items-center overflow-hidden border-t border-white/5 py-0"
+        >
+          {/* Background Grid Pattern */}
+          <div className="absolute inset-0 grid-bg opacity-[0.03] pointer-events-none" />
+
+          {/* Dynamic Curvy Connecting Line (Desktop) */}
+          <div className="absolute inset-0 pointer-events-none z-0 overflow-visible">
+            <svg className="w-full h-full" viewBox="0 0 1440 900" fill="none" preserveAspectRatio="none">
+              <path
+                className="archive-connecting-path opacity-20 blur-[3px]"
+                d="M 720,0 C 400,150 100,300 100,450 C 100,600 600,550 720,600 C 850,650 1200,800 720,900"
+                stroke="var(--color-accent, #F59E0B)"
+                strokeWidth="5"
+                strokeLinecap="round"
+              />
+              <path
+                className="archive-connecting-path"
+                d="M 720,0 C 400,150 100,300 100,450 C 100,600 600,550 720,600 C 850,650 1200,800 720,900"
+                stroke="var(--color-accent, #F59E0B)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
+
+          {/* Background Soft Glow aura that morphs color */}
+          <div 
+            className={`absolute top-1/2 left-[25%] -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full blur-[140px] pointer-events-none -z-10 transition-all duration-1000 ease-in-out ${getGlowColor(activeIndex)}`} 
+          />
+
+          <div className="max-w-7xl mx-auto px-6 md:px-12 w-full h-full flex flex-row items-stretch relative z-10">
             
-            {/* Section Title Header */}
-            <div className="max-w-7xl mx-auto w-full px-6 md:px-12 mb-12 flex-shrink-0">
-              <ScrollReveal>
-                <span className="text-xs uppercase font-extrabold tracking-widest text-accent mb-3 block">
-                  Featured Work
-                </span>
-                <h2 className="text-4xl md:text-6xl font-black tracking-tight text-foreground font-display">
-                  Projects <span className="text-gradient">Archive</span>.
-                </h2>
-              </ScrollReveal>
+            {/* Left Column: device Showcase (50% width, remains centered in viewport) */}
+            <div className="w-[50%] flex flex-col justify-center items-center relative pr-8">
+              
+              {/* High-Fidelity Glassmorphic Browser Frame Mockup */}
+              <div className="w-full aspect-video rounded-2xl border border-white/10 bg-[#111113]/90 backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col relative">
+                
+                {/* Browser Header Bar */}
+                <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-black/40 flex-shrink-0 relative z-10">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F]" />
+                  </div>
+                  {/* URL Address Bar */}
+                  <div className="mx-auto w-[60%] h-4.5 rounded-md bg-white/[0.03] border border-white/5 flex items-center justify-center text-[9px] font-mono text-muted/50 select-none">
+                    {PROJECTS[activeIndex].link.replace("https://", "").split("/")[0]}
+                  </div>
+                </div>
+
+                {/* Device Content: Morphing Screens */}
+                <div className="flex-1 relative bg-black/40 overflow-hidden">
+                  {PROJECTS.map((proj, idx) => {
+                    const isActive = activeIndex === idx;
+                    return (
+                      <div
+                        key={proj.id}
+                        className="absolute inset-0 transition-all duration-700 ease-in-out"
+                        style={{
+                          opacity: isActive ? 1 : 0,
+                          transform: isActive ? "scale(1) translateY(0px)" : "scale(0.96) translateY(20px)",
+                          pointerEvents: isActive ? "auto" : "none"
+                        }}
+                      >
+                        {/* Project screenshot */}
+                        <Image
+                          src={proj.image}
+                          alt={proj.title}
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 50vw"
+                          className="object-cover"
+                          unoptimized={true}
+                        />
+                        {/* Shadow mask */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                      </div>
+                    );
+                  })}
+                </div>
+
+              </div>
+
             </div>
 
-            {/* Horizontal Wrap Container */}
-            <div
-              ref={wrapRef}
-              className="pin-wrap flex gap-12 pl-[10vw] pr-[20vw] items-stretch flex-shrink-0"
-            >
-              {PROJECTS.map((project) => (
-                <ProjectCard key={project.id} project={project} />
-              ))}
+            {/* Right Column: Sliding Project Narrative Details (50% width) */}
+            <div className="w-[50%] h-screen relative overflow-hidden pl-8 border-l border-white/5">
+              
+              {/* Scrollable Container (GSAP translates this upward) */}
+              <div ref={scrollWrapRef} className="w-full flex flex-col justify-start select-text">
+                {PROJECTS.map((proj, idx) => (
+                  <div 
+                    key={proj.id}
+                    className="h-screen w-full flex flex-col justify-center relative select-text"
+                  >
+                    <div className="max-w-md flex flex-col justify-start">
+                      <span className="font-mono text-[9px] font-bold text-accent tracking-widest uppercase mb-4 bg-accent/15 px-2.5 py-1 rounded-full w-fit">
+                        PROJECT 0{idx + 1}
+                      </span>
+                      
+                      <h3 className="text-3xl md:text-4xl font-bold text-white tracking-tight leading-snug">
+                        {proj.title}
+                      </h3>
+                      
+                      <span className="text-[10px] font-mono tracking-widest text-muted uppercase font-bold mt-1.5 block">
+                        {proj.subtitle}
+                      </span>
+
+                      <p className="text-xs md:text-sm text-muted/80 mt-6 leading-relaxed font-light">
+                        {proj.description}
+                      </p>
+
+                      <div className="flex flex-wrap gap-2 mt-6">
+                        {proj.tags.map((tag, tIdx) => (
+                          <span 
+                            key={tIdx} 
+                            className="text-[9px] font-mono font-bold uppercase tracking-wider text-accent bg-accent/10 px-2.5 py-1 rounded-full"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Visit Link button */}
+                      <a
+                        href={proj.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-8 py-3 px-6 rounded-xl bg-accent text-white text-[10px] font-mono font-bold uppercase tracking-widest flex items-center justify-center gap-2 w-fit transition-all duration-300 hover:bg-amber-600 hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-accent/5"
+                      >
+                        <span>EXPLORE PROJECT</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
             </div>
 
           </div>
         </section>
       )}
-    </div>
-  );
-}
-
-// Project Card with Magnetic Button and Cursor Morph
-function ProjectCard({ project }) {
-  const btnRef = useMagnetic(0.35);
-
-  return (
-    <div
-      className="w-[30vw] min-w-[420px] shrink-0 h-[50vh] min-h-[380px] rounded-3xl border border-black/5 bg-white/40 backdrop-blur-sm shadow-sm overflow-hidden flex flex-col group relative transition-all duration-500 hover:border-black/10 hover:shadow-md cursor-pointer select-none"
-      data-cursor="view"
-    >
-      {/* Background Image Container */}
-      <div className="relative w-full h-[60%] overflow-hidden bg-gray-100">
-        <Image
-          src={project.image}
-          alt={project.title}
-          fill
-          sizes="(max-width: 1200px) 420px, 30vw"
-          className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
-        />
-        
-        {/* Floating Accent tag */}
-        <div className="absolute top-4 right-4 z-10">
-          <span className="text-[9px] uppercase font-extrabold tracking-widest bg-accent text-white px-2.5 py-1 rounded-full shadow-sm">
-            Interactive
-          </span>
-        </div>
-      </div>
-
-      {/* Info Container */}
-      <div className="p-6 flex flex-col justify-between h-[40%] bg-white/80">
-        <div className="flex flex-col">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold text-foreground group-hover:text-accent transition-colors duration-300">
-              {project.title}
-            </h3>
-            <span className="text-[10px] font-mono text-muted uppercase font-bold tracking-widest">
-              {project.subtitle.split(" ")[0]}
-            </span>
-          </div>
-          <p className="text-xs text-muted/80 mt-1 uppercase font-semibold tracking-wider">
-            {project.subtitle}
-          </p>
-        </div>
-
-        {/* Lower row: tags and quick link */}
-        <div className="flex items-center justify-between border-t border-black/5 pt-4 mt-2">
-          <div className="flex flex-wrap gap-1">
-            {project.tags.slice(0, 2).map((tag, idx) => (
-              <span
-                key={idx}
-                className="text-[9px] px-2 py-0.5 bg-black/[0.03] text-muted rounded font-bold uppercase tracking-wider"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          {/* Magnetic View Button on Hover */}
-          <div ref={btnRef} className="w-8 h-8 rounded-full border border-black/10 bg-white flex items-center justify-center group-hover:bg-accent group-hover:text-white group-hover:border-accent transition-colors duration-300">
-            <ExternalLink className="w-3.5 h-3.5" />
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
