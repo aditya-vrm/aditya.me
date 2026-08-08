@@ -172,7 +172,7 @@ export default function Archive({ loaderComplete }) {
                     alt={project.title}
                     fill
                     sizes="340px"
-                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
+                    className="object-cover transition-all duration-300"
                     unoptimized={true}
                   />
                 </div>

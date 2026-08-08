@@ -1,6 +1,4 @@
-"use client";
-
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { WORK_EXPERIENCE } from "@/lib/constants";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { Calendar, Briefcase, Sparkles, Building2 } from "lucide-react";
@@ -8,6 +6,11 @@ import { useMagnetic } from "@/hooks/useMagnetic";
 
 export default function Work({ loaderComplete }) {
   const containerRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+  }, []);
 
   useEffect(() => {
     if (!loaderComplete) return;
@@ -16,6 +19,9 @@ export default function Work({ loaderComplete }) {
     const timer = setTimeout(() => {
       const cards = gsap.utils.toArray(".experience-card");
       if (!cards.length || !containerRef.current) return;
+
+      // Disable card unstacking/pinning ScrollTrigger on mobile devices
+      if (window.innerWidth < 768) return;
 
       // Respect prefers-reduced-motion
       const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -301,8 +307,8 @@ export default function Work({ loaderComplete }) {
         </h2>
       </div>
 
-      {/* Stacked Cards Container */}
-      <div className="relative w-[90vw] md:w-[75vw] max-w-4xl h-[70vh] md:h-[56vh] flex justify-center items-center mt-20 z-20">
+      {/* Stacked Cards Container (Vertical list on mobile, absolute stack on desktop) */}
+      <div className="relative w-[90vw] md:w-[75vw] max-w-4xl h-auto md:h-[56vh] flex flex-col md:block mt-20 z-20 gap-6 md:gap-0">
         {WORK_EXPERIENCE.map((exp, idx) => {
           // Pre-calculate initial styles for stacked layout preview
           const initialScale = 1 - idx * 0.05;
@@ -313,8 +319,8 @@ export default function Work({ loaderComplete }) {
             <div
               key={idx}
               onMouseMove={handleCardMouseMove}
-              className={`experience-card group absolute inset-0 rounded-[32px] p-6 md:p-9 flex flex-col justify-between items-stretch overflow-hidden border bg-black shadow-2xl transition-all duration-300 ${getBorderColor(idx)}`}
-              style={{
+              className={`experience-card group relative md:absolute md:inset-0 w-full md:w-auto h-auto md:h-full rounded-[32px] p-6 md:p-9 flex flex-col justify-between items-stretch overflow-hidden border bg-black shadow-2xl transition-all duration-300 ${getBorderColor(idx)}`}
+              style={isMobile ? { zIndex: 1 } : {
                 zIndex: WORK_EXPERIENCE.length - idx,
                 transform: `scale(${initialScale}) translateY(${initialY}px) rotate(${initialRotate}deg)`,
                 transformOrigin: "bottom center"
