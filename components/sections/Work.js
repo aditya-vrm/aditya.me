@@ -43,46 +43,34 @@ export default function Work({ loaderComplete }) {
       cards.forEach((card, index) => {
         if (index === cards.length - 1) return; // The last card stays in place
 
-        // 1. Current card slides up and away
+        // 1. Current card slides up and away with Snappy slide-out
         tl.to(card, {
-          yPercent: -130,
-          rotate: () => -8 - Math.random() * 8, // slight random rotation tilt as it flies away
+          yPercent: -140,
+          rotate: index % 2 === 0 ? -9 : 9, // clean alternating tilt (prevents random rebuild lag)
           opacity: 0,
           scale: 0.9,
-          ease: "power1.inOut",
+          ease: "power2.inOut",
         }, index);
 
-        // 2. Next card slides up and scales up to normal size
+        // 2. Next card scales up and centers cleanly (transitioning from pre-rendered stack style)
         const nextCard = cards[index + 1];
-        tl.fromTo(nextCard,
-          {
-            scale: index === 0 ? 0.95 : index === 1 ? 0.90 : 0.85,
-            y: index === 0 ? 24 : index === 1 ? 48 : 72,
-            rotate: index % 2 === 0 ? 2 : -2,
-          },
-          {
-            scale: 1,
-            y: 0,
-            rotate: 0,
-            ease: "power1.out",
-          },
-          index
-        );
-
-        // Keep card texts static and instantly visible as requested
+        tl.to(nextCard, {
+          scale: 1,
+          y: 0,
+          rotate: 0,
+          ease: "power2.out",
+        }, index);
 
         // 3. Shift subsequent cards in the stack up slightly
         for (let i = index + 2; i < cards.length; i++) {
           const remainingCard = cards[i];
-          const prevScale = 1 - (i - index) * 0.05;
           const targetScale = 1 - (i - index - 1) * 0.05;
-          const prevY = (i - index) * 24;
           const targetY = (i - index - 1) * 24;
           
           tl.to(remainingCard, {
             scale: targetScale,
             y: targetY,
-            ease: "power1.out"
+            ease: "power2.out"
           }, index);
         }
       });
@@ -154,6 +142,51 @@ export default function Work({ loaderComplete }) {
     if (company.includes("Cognifyz")) return "Cognifyz";
     if (company.includes("Global")) return "Webify";
     return "Freelance";
+  };
+
+  const getCompanyLogo = (index) => {
+    switch (index) {
+      case 0:
+        return (
+          <svg className="w-6 h-6 text-amber-400" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M30 40 L15 50 L30 60 M70 40 L85 50 L70 60 M45 70 L55 30" />
+            <circle cx="50" cy="50" r="4" fill="currentColor" className="animate-pulse" />
+          </svg>
+        );
+      case 1:
+        return (
+          <svg className="w-6 h-6 text-indigo-400" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <circle cx="50" cy="50" r="30" />
+            <ellipse cx="50" cy="50" rx="10" ry="30" />
+            <ellipse cx="50" cy="50" rx="30" ry="10" />
+          </svg>
+        );
+      case 2:
+        return (
+          <svg className="w-6 h-6 text-cyan-400" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M40 30 C30 30 20 40 20 50 C20 60 30 70 40 70 M60 30 C70 30 80 40 80 50 C80 60 70 70 60 70" />
+            <circle cx="40" cy="50" r="5" fill="currentColor" />
+            <circle cx="60" cy="50" r="5" fill="currentColor" />
+            <line x1="40" y1="50" x2="60" y2="50" stroke="currentColor" strokeDasharray="3 3" />
+          </svg>
+        );
+      case 3:
+        return (
+          <svg className="w-6 h-6 text-rose-500" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M50 20 L80 35 L80 65 L50 80 L20 65 L20 35 Z" />
+            <circle cx="50" cy="50" r="12" stroke="currentColor" />
+            <path d="M50 38 L50 62 M38 50 L62 50" />
+          </svg>
+        );
+      case 4:
+        return (
+          <svg className="w-6 h-6 text-emerald-400" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M30 50 C30 35 45 35 50 50 C55 65 70 65 70 50 C70 35 55 35 50 50 C45 65 30 65 30 50 Z" />
+          </svg>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -302,7 +335,7 @@ export default function Work({ loaderComplete }) {
             <div
               key={idx}
               onMouseMove={handleCardMouseMove}
-              className={`experience-card group absolute inset-0 rounded-[32px] p-6 md:p-9 flex flex-col justify-between items-stretch overflow-hidden border bg-[#111113]/90 backdrop-blur-xl shadow-2xl transition-all duration-300 ${getBorderColor(idx)}`}
+              className={`experience-card group absolute inset-0 rounded-[32px] p-6 md:p-9 flex flex-col justify-between items-stretch overflow-hidden border bg-black shadow-2xl transition-all duration-300 ${getBorderColor(idx)}`}
               style={{
                 zIndex: WORK_EXPERIENCE.length - idx,
                 transform: `scale(${initialScale}) translateY(${initialY}px) rotate(${initialRotate}deg)`,
@@ -319,7 +352,7 @@ export default function Work({ loaderComplete }) {
 
               {/* Giant Outline Company Name Background */}
               <div 
-                className="absolute -bottom-6 -right-6 text-7xl sm:text-8xl md:text-9xl font-black font-display tracking-wider uppercase select-none pointer-events-none opacity-[0.03] leading-none z-0"
+                className="absolute -bottom-6 -right-6 text-7xl sm:text-8xl md:text-9xl font-black font-display tracking-wider uppercase select-none pointer-events-none opacity-[0.02] leading-none z-0"
                 style={{ 
                   WebkitTextStroke: "1.5px rgba(255, 255, 255, 0.4)", 
                   WebkitTextFillColor: "transparent" 
@@ -332,21 +365,25 @@ export default function Work({ loaderComplete }) {
               <div className="w-full h-full flex flex-col justify-between relative z-10 select-text">
                 
                 {/* Header Bar */}
-                <div className="card-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4 border-b border-white/5 pb-4 mb-4">
-                  <div>
-                    <span className="font-mono text-[9px] font-bold tracking-widest text-accent uppercase bg-accent/10 px-2.5 py-1 rounded-full w-fit mb-3 flex items-center gap-1.5">
+                <div className="card-header flex items-start justify-between gap-4 border-b border-white/5 pb-5 mb-4">
+                  <div className="flex flex-col gap-1.5">
+                    <span className="font-mono text-[9px] font-bold tracking-widest text-accent uppercase bg-accent/10 px-2.5 py-1 rounded-full w-fit flex items-center gap-1.5">
                       <Calendar className="w-3 h-3" />
                       {exp.duration}
                     </span>
-                    <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight leading-snug flex items-center gap-2">
-                      <Briefcase className="w-5 h-5 text-accent/80 shrink-0" />
+                    <h3 className="text-xl md:text-2xl font-bold text-white tracking-tight leading-tight mt-1.5">
                       {exp.role}
                     </h3>
+                    <p className="text-xs md:text-sm font-semibold text-muted/70 flex items-center gap-1.5">
+                      <Building2 className="w-3.5 h-3.5 text-muted/40" />
+                      {exp.company}
+                    </p>
                   </div>
-                  <p className="text-xs md:text-sm font-semibold text-muted/80 flex items-center gap-1.5 sm:self-end">
-                    <Building2 className="w-4 h-4 text-muted/50" />
-                    {exp.company}
-                  </p>
+                  
+                  {/* Brand Logo Container */}
+                  <div className="w-14 h-14 rounded-2xl border border-white/10 bg-white/[0.02] flex items-center justify-center shrink-0 shadow-inner">
+                    {getCompanyLogo(idx)}
+                  </div>
                 </div>
 
                 {/* Description */}
@@ -359,7 +396,7 @@ export default function Work({ loaderComplete }) {
                   {exp.highlights.map((highlight, hIdx) => (
                     <div 
                       key={hIdx} 
-                      className="card-highlight-item p-3.5 rounded-2xl border border-white/5 bg-white/[0.02] flex items-start gap-2.5 transition-colors duration-300 hover:bg-white/[0.04]"
+                      className="card-highlight-item p-3.5 rounded-2xl border border-white/5 bg-white/[0.01] flex items-start gap-2.5 transition-colors duration-300 hover:bg-white/[0.03]"
                     >
                       <Sparkles className="w-3.5 h-3.5 text-accent mt-0.5 shrink-0" />
                       <p className="text-[10px] md:text-[11px] text-muted/80 leading-relaxed font-light">
