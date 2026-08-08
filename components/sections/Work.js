@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { WORK_EXPERIENCE } from "@/lib/constants";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { Calendar, Briefcase, Sparkles, Building2 } from "lucide-react";
+import { useMagnetic } from "@/hooks/useMagnetic";
 
 export default function Work({ loaderComplete }) {
   const containerRef = useRef(null);
@@ -32,34 +33,12 @@ export default function Work({ loaderComplete }) {
         }
       });
 
-      // Initial state of other cards' contents to opacity 0 so they don't flash and can stagger in
-      cards.forEach((card, idx) => {
-        if (idx > 0) {
-          gsap.set(card.querySelector(".card-header"), { opacity: 0, y: 15 });
-          gsap.set(card.querySelector(".card-desc"), { opacity: 0, y: 15 });
-          gsap.set(card.querySelectorAll(".card-highlight-item"), { opacity: 0, x: -15 });
-        }
-      });
-
-      // First card content entrance reveal (instantly starts revealing on load)
-      const firstCard = cards[0];
-      if (firstCard) {
-        tl.fromTo(firstCard.querySelector(".card-header"),
-          { opacity: 0, y: 15 },
-          { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
-          0
-        );
-        tl.fromTo(firstCard.querySelector(".card-desc"),
-          { opacity: 0, y: 15 },
-          { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
-          0.1
-        );
-        tl.fromTo(firstCard.querySelectorAll(".card-highlight-item"),
-          { opacity: 0, x: -15 },
-          { opacity: 1, x: 0, stagger: 0.08, duration: 0.4, ease: "power2.out" },
-          0.2
-        );
-      }
+      // Keep card texts static and instantly visible as requested
+      tl.fromTo(".work-section-header",
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+        0
+      );
 
       cards.forEach((card, index) => {
         if (index === cards.length - 1) return; // The last card stays in place
@@ -90,26 +69,7 @@ export default function Work({ loaderComplete }) {
           index
         );
 
-        // Animate inner text elements of the next card to reveal on active
-        const header = nextCard.querySelector(".card-header");
-        const desc = nextCard.querySelector(".card-desc");
-        const highlights = nextCard.querySelectorAll(".card-highlight-item");
-
-        tl.fromTo(header, 
-          { opacity: 0, y: 15 },
-          { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
-          index + 0.2
-        );
-        tl.fromTo(desc, 
-          { opacity: 0, y: 15 },
-          { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
-          index + 0.3
-        );
-        tl.fromTo(highlights, 
-          { opacity: 0, x: -15 },
-          { opacity: 1, x: 0, stagger: 0.08, duration: 0.4, ease: "power2.out" },
-          index + 0.4
-        );
+        // Keep card texts static and instantly visible as requested
 
         // 3. Shift subsequent cards in the stack up slightly
         for (let i = index + 2; i < cards.length; i++) {
@@ -202,6 +162,74 @@ export default function Work({ loaderComplete }) {
       id="work" 
       className="min-h-screen w-full relative bg-[#F9F9FB] flex flex-col justify-center items-center overflow-hidden py-24 select-none"
     >
+      {/* Bobbing animation styles for tech stack logos */}
+      <style>{`
+        @keyframes float-bob {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-16px); }
+          100% { transform: translateY(0px); }
+        }
+        .animate-bob {
+          animation: float-bob ease-in-out infinite;
+        }
+      `}</style>
+
+      {/* Floating Stack Logos (Left Side) */}
+      <div className="absolute left-[3vw] lg:left-[5vw] top-1/2 -translate-y-1/2 flex flex-col gap-14 z-30 hidden md:flex opacity-75 hover:opacity-100 transition-opacity duration-300">
+        <MagneticLogo label="React">
+          <svg className="w-12 h-12 text-[#61DAFB] animate-bob" style={{ animationDelay: "0s", animationDuration: "5s" }} viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <ellipse cx="50" cy="50" rx="15" ry="38" transform="rotate(30 50 50)" />
+            <ellipse cx="50" cy="50" rx="15" ry="38" transform="rotate(90 50 50)" />
+            <ellipse cx="50" cy="50" rx="15" ry="38" transform="rotate(150 50 50)" />
+            <circle cx="50" cy="50" r="5" fill="currentColor" />
+          </svg>
+        </MagneticLogo>
+
+        <MagneticLogo label="Node.js">
+          <svg className="w-12 h-12 text-[#339933] animate-bob" style={{ animationDelay: "1s", animationDuration: "5.8s" }} viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M50 15 L80 32 L80 68 L50 85 L20 68 L20 32 Z" />
+            <path d="M50 15 L50 85 M20 32 L80 68 M80 32 L20 68" opacity="0.3" />
+          </svg>
+        </MagneticLogo>
+
+        <MagneticLogo label="MongoDB">
+          <svg className="w-12 h-12 text-[#47A248] animate-bob" style={{ animationDelay: "2s", animationDuration: "6.4s" }} viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M50 10 C50 10 30 35 30 55 C30 75 40 85 50 90 C60 85 70 75 70 55 C70 35 50 10 50 10 Z" />
+            <path d="M50 10 L50 90" opacity="0.3" />
+          </svg>
+        </MagneticLogo>
+      </div>
+
+      {/* Floating Stack Logos (Right Side) */}
+      <div className="absolute right-[3vw] lg:right-[5vw] top-1/2 -translate-y-1/2 flex flex-col gap-14 z-30 hidden md:flex opacity-75 hover:opacity-100 transition-opacity duration-300">
+        <MagneticLogo label="Next.js">
+          <svg className="w-12 h-12 text-black animate-bob" style={{ animationDelay: "0.5s", animationDuration: "5.2s" }} viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3">
+            <circle cx="50" cy="50" r="40" />
+            <path d="M35 65 L35 35 L62 65 M62 35 L62 55" />
+          </svg>
+        </MagneticLogo>
+
+        <MagneticLogo label="Python">
+          <svg className="w-12 h-12 text-[#3776AB] animate-bob" style={{ animationDelay: "1.5s", animationDuration: "6s" }} viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M30 15 C30 15 45 10 50 15 C55 20 50 35 50 35 L30 35 Z M70 85 C70 85 55 90 50 85 C45 80 50 65 50 65 L70 65 Z" />
+            <circle cx="38" cy="23" r="3" fill="currentColor" />
+            <circle cx="62" cy="77" r="3" fill="currentColor" />
+          </svg>
+        </MagneticLogo>
+
+        <MagneticLogo label="Docker">
+          <svg className="w-12 h-12 text-[#2496ED] animate-bob" style={{ animationDelay: "2.5s", animationDuration: "6.6s" }} viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <rect x="25" y="45" width="10" height="10" rx="1" />
+            <rect x="38" y="45" width="10" height="10" rx="1" />
+            <rect x="51" y="45" width="10" height="10" rx="1" />
+            <rect x="38" y="32" width="10" height="10" rx="1" />
+            <rect x="51" y="32" width="10" height="10" rx="1" />
+            <rect x="64" y="45" width="10" height="10" rx="1" />
+            <path d="M15 60 C25 60 20 75 50 75 C80 75 90 60 90 60" />
+          </svg>
+        </MagneticLogo>
+      </div>
+
       {/* Background Grid Pattern (Light theme optimized) */}
       <div className="absolute inset-0 grid-bg opacity-5 pointer-events-none" />
 
@@ -253,7 +281,7 @@ export default function Work({ loaderComplete }) {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Section Header */}
-      <div className="absolute top-12 left-6 md:left-12 z-30 select-text">
+      <div className="absolute top-12 left-6 md:left-12 z-30 select-text work-section-header">
         <span className="text-[10px] uppercase font-extrabold tracking-widest text-accent mb-2 block">
           Professional Path
         </span>
@@ -353,5 +381,22 @@ export default function Work({ loaderComplete }) {
         <span>Scroll to explore journey</span>
       </div>
     </section>
+  );
+}
+
+// Helper component for magnetic logo effect on hover
+function MagneticLogo({ children, label }) {
+  const ref = useMagnetic(0.9);
+  return (
+    <div 
+      ref={ref}
+      className="flex flex-col items-center gap-2 cursor-pointer"
+      data-cursor="pointer"
+    >
+      {children}
+      <span className="font-mono text-[8px] font-bold uppercase tracking-wider text-black/40">
+        {label}
+      </span>
+    </div>
   );
 }

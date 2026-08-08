@@ -10,6 +10,7 @@ import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
 import Work from "@/components/sections/Work";
 import Story from "@/components/sections/Story";
+import TechTicker from "@/components/sections/TechTicker";
 import Archive from "@/components/sections/Archive";
 import Contact from "@/components/sections/Contact";
 import { motion, AnimatePresence } from "framer-motion";
@@ -57,8 +58,9 @@ export default function Home() {
             <About />
             <Work loaderComplete={loaderComplete} />
             <Story />
+            <TechTicker />
             <Archive loaderComplete={loaderComplete} />
-            <Contact />
+            <Contact loaderComplete={loaderComplete} />
           </main>
 
           {/* Bottom floating Navbar & Footer */}

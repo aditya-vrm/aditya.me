@@ -28,6 +28,30 @@ export default function Archive({ loaderComplete }) {
     return () => window.removeEventListener("resize", checkTouch);
   }, []);
 
+  // Mobile Heading Reveal Scroll Trigger
+  useEffect(() => {
+    if (!loaderComplete || !isMobileOrTouch) return;
+
+    const timer = setTimeout(() => {
+      gsap.fromTo(".archive-section-header",
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".archive-section-header",
+            start: "top 95%",
+            toggleActions: "play none none reverse",
+          }
+        }
+      );
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [isMobileOrTouch, loaderComplete]);
+
   useEffect(() => {
     if (!loaderComplete || isMobileOrTouch) return;
 
@@ -66,6 +90,21 @@ export default function Archive({ loaderComplete }) {
           yPercent: -80, // brings the 5th project detail block to the center
           ease: "none",
         }, 0);
+
+        gsap.fromTo(".archive-section-header",
+          { opacity: 0, y: 40 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: container,
+              start: "top 85%", // slides up instantly as section enters screen
+              toggleActions: "play none none reverse",
+            }
+          }
+        );
 
         // Draw the curvy connecting line in the Archive section dynamically
         const paths = document.querySelectorAll(".archive-connecting-path");
@@ -108,7 +147,7 @@ export default function Archive({ loaderComplete }) {
       {isMobileOrTouch ? (
         // Mobile Layout: Normal Horizontal Swipeable Carousel (Light theme matches previous)
         <section className="py-24 px-6 w-full max-w-7xl mx-auto flex flex-col justify-start bg-background border-t border-black/5">
-          <div className="mb-12">
+          <div className="mb-12 archive-section-header">
             <span className="text-xs uppercase font-extrabold tracking-widest text-accent mb-3 block">
               Featured Work
             </span>
@@ -202,7 +241,7 @@ export default function Archive({ loaderComplete }) {
           />
 
           {/* Section Header */}
-          <div className="absolute top-12 left-6 md:left-12 z-30 select-text">
+          <div className="absolute top-12 left-6 md:left-12 z-30 select-text archive-section-header">
             <span className="text-[10px] uppercase font-extrabold tracking-widest text-accent mb-2 block">
               Featured Work
             </span>

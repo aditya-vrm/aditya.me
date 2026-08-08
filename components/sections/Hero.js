@@ -177,7 +177,7 @@ export default function Hero({ loaderComplete }) {
               }}
             >
               <Image
-                src="/images/suit_portrait.jpg"
+                src="/suit_portrait.png"
                 alt="Aditya Verma Suit Portrait Hover"
                 fill
                 priority
@@ -196,6 +196,17 @@ export default function Hero({ loaderComplete }) {
             />
           </div>
         </motion.div>
+
+        {/* Hover Me indicator below the image card */}
+        <div className="absolute top-[82%] sm:top-[78%] left-[68%] sm:left-[64%] md:left-[60%] -translate-x-1/2 z-30 font-mono text-[8px] uppercase tracking-widest text-accent font-bold animate-pulse">
+          hover me
+        </div>
+      </div>
+
+      {/* Scroll indicator at center bottom */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-1.5 font-mono text-[9px] tracking-widest uppercase font-bold text-muted/60 animate-bounce">
+        <span>Scroll</span>
+        <span className="w-1 h-1 rounded-full bg-accent" />
       </div>
 
       {/* Desktop/Tablet line (MD and up): Rolls around the name starting from 'A' */}

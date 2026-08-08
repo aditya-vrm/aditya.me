@@ -16,7 +16,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full py-12 px-6 border-t border-black/5 bg-background relative z-10">
+    <footer className="w-full py-6 px-6 border-t border-black/5 bg-background relative z-10">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
         
         {/* Left Side: Name and Copyright */}
@@ -25,7 +25,7 @@ export default function Footer() {
             Aditya Verma
           </p>
           <p className="text-xs text-muted mt-1">
-            © {currentYear} · Made with Next.js & GSAP. All rights reserved.
+            © {currentYear} ·  All rights reserved.
           </p>
         </div>
 

@@ -13,11 +13,11 @@ export function useLenis() {
     if (prefersReduced) return;
 
     const lenis = new Lenis({
-      duration: 1.3,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      duration: 1.8, // Luxurious, longer scroll transition
+      easing: (t) => 1 - Math.pow(1 - t, 5), // Premium quintic ease-out (buttery smooth deceleration)
       smoothWheel: true,
-      wheelMultiplier: 1.0,
-      touchMultiplier: 1.5,
+      wheelMultiplier: 0.85, // Slightly slower, more controlled wheel response
+      touchMultiplier: 1.2,
     });
 
     // Sync Lenis scroll with GSAP ScrollTrigger updates

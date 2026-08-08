@@ -147,6 +147,11 @@ export default function Loader({ onComplete }) {
             Loading
           </span>
         </div>
+
+        {/* Scroll Smoothly label at center bottom */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 font-mono text-[9px] tracking-widest uppercase font-bold text-white/40 animate-pulse">
+          Scroll Smoothly
+        </div>
       </div>
     </div>
   );

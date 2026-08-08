@@ -11,8 +11,8 @@ export default function Navbar() {
   useEffect(() => {
     const observerOptions = {
       root: null,
-      rootMargin: "-20% 0px -60% 0px", // Trigger when section occupies the middle of viewport
-      threshold: 0.1,
+      rootMargin: "-30% 0px -50% 0px", // Trigger when section occupies center of viewport
+      threshold: 0.15,
     };
 
     const handleIntersection = (entries) => {
@@ -48,10 +48,11 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-[90vw] md:max-w-xs">
-      <div className="flex items-center justify-center w-full px-4 py-2.5 rounded-full bg-glass-bg border border-glass-border backdrop-blur-md shadow-lg shadow-black/5 hover:border-accent/30 transition-colors duration-300">
-        {/* Navigation Links */}
-        <div className="flex items-center gap-1 md:gap-1.5">
+    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-fit max-w-[95vw]">
+      <div className="flex items-center justify-center w-full px-4 py-2 md:px-5 md:py-2.5 rounded-full bg-white/10 border border-white/10 backdrop-blur-md shadow-lg shadow-black/5 hover:border-accent/20 transition-all duration-500">
+        
+        {/* Navigation Links with magnetic + roll hover */}
+        <div className="flex items-center gap-1 md:gap-2">
           {NAV_LINKS.map((link) => {
             const isActive = activeSection === link.href;
             return (
@@ -64,12 +65,13 @@ export default function Navbar() {
             );
           })}
         </div>
+
       </div>
     </nav>
   );
 }
 
-// Inner component for magnetic link behavior and hover transitions
+// Inner component for magnetic link behavior and text roll hover transitions
 function NavLink({ link, isActive, onClick }) {
   const linkRef = useMagnetic(0.3);
 
@@ -78,21 +80,26 @@ function NavLink({ link, isActive, onClick }) {
       <a
         href={link.href}
         onClick={onClick}
-        className={`px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide uppercase transition-all duration-300 relative block overflow-hidden ${
+        className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full text-[9px] md:text-[10px] font-extrabold tracking-widest uppercase transition-all duration-300 relative block overflow-hidden group select-none ${
           isActive
-            ? "text-white"
-            : "text-foreground hover:text-accent"
+            ? "text-accent bg-accent/5"
+            : "text-muted hover:text-foreground"
         }`}
       >
-        {/* Animated background pill for active state */}
+        {/* Active Underdot */}
         {isActive && (
-          <span className="absolute inset-0 bg-accent rounded-full -z-10 layoutId" />
+          <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent animate-pulse" />
         )}
         
-        {/* Text container */}
-        <span className="relative z-10 block transition-transform duration-300 hover:scale-105">
-          {link.name}
-        </span>
+        {/* Text Roll Container */}
+        <div className="h-3.5 overflow-hidden relative block px-0.5">
+          <span className={`block transition-transform duration-300 group-hover:-translate-y-full ${isActive ? "text-accent" : ""}`}>
+            {link.name}
+          </span>
+          <span className="block absolute inset-0 text-accent transition-transform duration-300 translate-y-full group-hover:translate-y-0">
+            {link.name}
+          </span>
+        </div>
       </a>
     </div>
   );

@@ -28,7 +28,7 @@ export default function Story() {
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top bottom",
-            end: "bottom top",
+            end: "bottom bottom",
             scrub: 1.5,
           }
         });
@@ -56,6 +56,55 @@ export default function Story() {
           pinSpacing: false,
         });
       }
+
+      // 3. Scroll Reveal for About Myself Header
+      gsap.fromTo(".story-section-header",
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".story-section-header",
+            start: "top 95%",
+            toggleActions: "play none none reverse",
+          }
+        }
+      );
+
+      // 4. Scroll Reveal for Narrative Blocks (Random scale & tilt reveals)
+      blockElements.forEach((block) => {
+        const textElements = block.querySelectorAll("span, h3, p");
+        textElements.forEach((el, elIdx) => {
+          const startScale = 0.8 + Math.random() * 0.12; // unique random scale (0.80 to 0.92)
+          const startRot = -3 + Math.random() * 6;       // unique random rotation tilt (-3deg to +3deg)
+          const delay = elIdx * 0.12;                    // staggered progressive entrance delay
+
+          gsap.fromTo(el,
+            { 
+              opacity: 0, 
+              scale: startScale, 
+              rotate: startRot,
+              y: 24 
+            },
+            {
+              opacity: 1,
+              scale: 1,
+              rotate: 0,
+              y: 0,
+              duration: 1.0,
+              ease: "power3.out", // smooth deceleration curve
+              scrollTrigger: {
+                trigger: block,
+                start: "top 85%", // reveals as block comes into view
+                toggleActions: "play none none reverse",
+              },
+              delay: delay
+            }
+          );
+        });
+      });
 
       ScrollTrigger.refresh();
     }, 200);
@@ -138,7 +187,7 @@ export default function Story() {
           <div ref={scrollContainerRef} className="w-full lg:w-[55%] flex flex-col justify-start gap-36 md:gap-56 z-10 select-text">
             
             {/* Header */}
-            <div className="mb-[-40px]">
+            <div className="mb-[-40px] story-section-header">
               <span className="text-[10px] uppercase font-extrabold tracking-widest text-accent mb-2 block">
                 My Story
               </span>
