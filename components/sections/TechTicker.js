@@ -219,26 +219,6 @@ export default function TechTicker() {
         </svg>
       </div>
 
-      {/* Full-section curvy connecting line (Mobile) */}
-      <div className="absolute inset-y-0 left-0 right-0 pointer-events-none z-0 overflow-visible md:hidden">
-        <svg className="w-full h-full" viewBox="0 0 375 600" fill="none" preserveAspectRatio="none">
-          <path
-            className="ticker-connecting-path opacity-20 blur-[3px]"
-            d="M 187.5,0 C 150,200 225,400 187.5,600"
-            stroke="var(--color-accent, #F59E0B)"
-            strokeWidth="5"
-            strokeLinecap="round"
-          />
-          <path
-            className="ticker-connecting-path"
-            d="M 187.5,0 C 150,200 225,400 187.5,600"
-            stroke="var(--color-accent, #F59E0B)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
-
       <div className="max-w-7xl mx-auto px-6 md:px-12 mb-16 text-left select-text relative z-10">
         <span className="text-[10px] uppercase font-extrabold tracking-widest text-accent mb-2 block">
           Capabilities

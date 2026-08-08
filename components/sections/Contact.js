@@ -135,29 +135,7 @@ export default function Contact({ loaderComplete }) {
         </svg>
       </div>
 
-      {/* Absolute Curvy Signature Overlay (Mobile) */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-visible md:hidden">
-        <svg className="w-full h-full" viewBox="0 0 375 900" fill="none" preserveAspectRatio="none">
-          <path
-            className="contact-signature-path opacity-20 blur-[2px]"
-            style={{ strokeDasharray: 2000, strokeDashoffset: 2000 }}
-            d="M 187.5,0 C 187.5,60 120,120 100,150 C 85,170 85,190 100,200 C 115,210 125,180 125,150 C 125,140 120,140 115,160 C 110,180 105,200 110,205 C 115,210 125,200 130,180 C 135,170 145,170 145,185 C 145,195 140,200 135,200 C 135,195 145,145 145,145 C 145,145 145,200 145,200 C 145,200 150,200 155,190 C 155,180 160,170 160,185 C 160,185 160,200 160,200 C 160,200 165,200 170,190 C 170,180 175,150 175,150 C 175,150 175,200 175,200 C 175,200 180,200 185,190 C 185,180 190,170 190,185 C 190,195 185,200 180,200 C 180,195 190,145 190,145 C 190,145 190,200 190,200 C 190,200 195,200 200,190 C 200,180 205,170 205,185 C 205,185 205,200 205,200 C 205,200 210,200 215,190 C 215,190 225,180 235,170"
-            stroke="var(--color-accent, #F59E0B)"
-            strokeWidth="4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            className="contact-signature-path"
-            style={{ strokeDasharray: 2000, strokeDashoffset: 2000 }}
-            d="M 187.5,0 C 187.5,60 120,120 100,150 C 85,170 85,190 100,200 C 115,210 125,180 125,150 C 125,140 120,140 115,160 C 110,180 105,200 110,205 C 115,210 125,200 130,180 C 135,170 145,170 145,185 C 145,195 140,200 135,200 C 135,195 145,145 145,145 C 145,145 145,200 145,200 C 145,200 150,200 155,190 C 155,180 160,170 160,185 C 160,185 160,200 160,200 C 160,200 165,200 170,190 C 170,180 175,150 175,150 C 175,150 175,200 175,200 C 175,200 180,200 185,190 C 185,180 190,170 190,185 C 190,195 185,200 180,200 C 180,195 190,145 190,145 C 190,145 190,200 190,200 C 190,200 195,200 200,190 C 200,180 205,170 205,185 C 205,185 205,200 205,200 C 205,200 210,200 215,190 C 215,190 225,180 235,170"
-            stroke="var(--color-accent, #F59E0B)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center relative z-10">
         
@@ -166,7 +144,7 @@ export default function Contact({ loaderComplete }) {
           <span className="text-xs uppercase font-extrabold tracking-widest text-accent mb-3 block">
             Get In Touch
           </span>
-          <h2 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[0.95] text-foreground font-display">
+          <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.1] md:leading-[0.95] text-foreground font-display">
             Let's Build
             <br />
             <span className="text-gradient">Something</span>

@@ -160,25 +160,7 @@ export default function Story() {
         </svg>
       </div>
 
-      {/* Dynamic Curvy Connecting Line (Mobile) */}
-      <div className="absolute inset-x-0 top-0 bottom-0 pointer-events-none z-0 overflow-visible md:hidden">
-        <svg className="w-full h-full" viewBox="0 0 375 1800" fill="none" preserveAspectRatio="none">
-          <path
-            className="story-connecting-path opacity-20 blur-[3px]"
-            d="M 187.5,0 C 80,300 295,700 187.5,1000 C 80,1200 187.5,1500 187.5,1800"
-            stroke="var(--color-accent, #F59E0B)"
-            strokeWidth="5"
-            strokeLinecap="round"
-          />
-          <path
-            className="story-connecting-path"
-            d="M 187.5,0 C 80,300 295,700 187.5,1000 C 80,1200 187.5,1500 187.5,1800"
-            stroke="var(--color-accent, #F59E0B)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
+
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10 h-full">
         <div className="flex flex-col lg:flex-row justify-between items-stretch gap-12 lg:gap-16 h-full">
@@ -252,7 +234,7 @@ export default function Story() {
           </div>
 
           {/* Right Side: Interactive Holographic Showcase (40% width, pinned) */}
-          <div className="story-interactive-showcase w-full lg:w-[40%] h-[50vh] lg:h-[80vh] flex items-center justify-center lg:sticky lg:top-16 z-20">
+          <div className="story-interactive-showcase hidden lg:flex w-full lg:w-[40%] h-[50vh] lg:h-[80vh] items-center justify-center lg:sticky lg:top-16 z-20">
             <div 
               onMouseMove={handleTiltMouseMove}
               onMouseLeave={handleTiltMouseLeave}

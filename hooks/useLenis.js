@@ -8,6 +8,9 @@ export function useLenis() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    // Disable custom scroll on mobile to allow native momentum scroll
+    if (window.innerWidth < 768) return;
+
     // Check for prefers-reduced-motion
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced) return;

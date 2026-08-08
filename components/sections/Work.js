@@ -288,28 +288,6 @@ export default function Work({ loaderComplete }) {
         </svg>
       </div>
 
-      {/* Full-section curvy connecting line wrapping the cards (Mobile) */}
-      <div className="absolute inset-x-0 top-0 bottom-0 pointer-events-none z-0 overflow-visible md:hidden">
-        <svg className="w-full h-full" viewBox="0 0 375 900" fill="none" preserveAspectRatio="none">
-          {/* Subtle glowing filter path */}
-          <path
-            className="work-connecting-path opacity-20 blur-[3px]"
-            d="M 187.5,0 C 80,200 295,400 187.5,600 C 80,700 187.5,800 187.5,900"
-            stroke="var(--color-accent, #F59E0B)"
-            strokeWidth="5"
-            strokeLinecap="round"
-          />
-          {/* Main solid path */}
-          <path
-            className="work-connecting-path"
-            d="M 187.5,0 C 80,200 295,400 187.5,600 C 80,700 187.5,800 187.5,900"
-            stroke="var(--color-accent, #F59E0B)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
-
       {/* Decorative top soft accent light */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
 

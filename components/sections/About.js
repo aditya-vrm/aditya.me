@@ -116,27 +116,7 @@ export default function About() {
         </svg>
       </div>
 
-      {/* Full-section curvy connecting line wrapping the text block (Mobile) */}
-      <div className="absolute inset-x-0 top-0 bottom-0 pointer-events-none z-0 overflow-visible md:hidden">
-        <svg className="w-full h-full" viewBox="0 0 375 900" fill="none" preserveAspectRatio="none">
-          {/* Subtle glowing filter path */}
-          <path
-            className="about-connecting-path opacity-20 blur-[3px]"
-            d="M 187.5,0 C 100,200 275,400 187.5,600 C 100,700 187.5,800 187.5,900"
-            stroke="var(--color-accent, #F59E0B)"
-            strokeWidth="5"
-            strokeLinecap="round"
-          />
-          {/* Main solid path */}
-          <path
-            className="about-connecting-path"
-            d="M 187.5,0 C 100,200 275,400 187.5,600 C 100,700 187.5,800 187.5,900"
-            stroke="var(--color-accent, #F59E0B)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
+
 
       {/* Typography Block */}
       <div className="w-full max-w-6xl px-6 md:px-12 flex flex-col items-center justify-center flex-grow text-center">
@@ -146,7 +126,7 @@ export default function About() {
 
         <h2 
           ref={paragraphRef}
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium font-display leading-[1.25] tracking-tight text-center flex flex-wrap justify-center select-text text-white"
+          className="text-xl sm:text-4xl md:text-5xl lg:text-6xl font-medium font-display leading-[1.3] tracking-tight text-center flex flex-wrap justify-center select-text text-white"
         >
           {words.map((word, idx) => (
             <span

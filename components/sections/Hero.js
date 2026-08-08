@@ -233,29 +233,6 @@ export default function Hero({ loaderComplete }) {
         </svg>
       </div>
 
-      {/* Mobile line (Below MD): Simpler path from the card region straight down to center */}
-      <div className="absolute inset-x-0 bottom-0 top-[70vh] pointer-events-none z-10 overflow-visible md:hidden">
-        <svg className="w-full h-full" viewBox="0 0 375 200" fill="none" preserveAspectRatio="none">
-          {/* Subtle glowing filter path */}
-          <path
-            className="hero-connecting-path opacity-20 blur-[3px]"
-            d="M 240,0 C 200,80, 187.5,100, 187.5,200"
-            stroke="var(--color-accent, #F59E0B)"
-            strokeWidth="5"
-            strokeLinecap="round"
-            style={{ vectorEffect: "non-scaling-stroke" }}
-          />
-          {/* Main solid path */}
-          <path
-            className="hero-connecting-path"
-            d="M 240,0 C 200,80, 187.5,100, 187.5,200"
-            stroke="var(--color-accent, #F59E0B)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            style={{ vectorEffect: "non-scaling-stroke" }}
-          />
-        </svg>
-      </div>
     </section>
   );
 }

@@ -216,7 +216,7 @@ export default function Archive({ loaderComplete }) {
           <div className="absolute inset-0 grid-bg opacity-[0.03] pointer-events-none" />
 
           {/* Dynamic Curvy Connecting Line (Desktop) */}
-          <div className="absolute inset-0 pointer-events-none z-0 overflow-visible">
+          <div className="absolute inset-0 pointer-events-none z-0 overflow-visible hidden md:block">
             <svg className="w-full h-full" viewBox="0 0 1440 900" fill="none" preserveAspectRatio="none">
               <path
                 className="archive-connecting-path opacity-20 blur-[3px]"
