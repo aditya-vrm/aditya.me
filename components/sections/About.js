@@ -37,26 +37,31 @@ export default function About() {
         });
       });
 
-      // 2. Cinematic word-by-word text reveal with Blur and Random Scale (Zoom down from camera)
+      // 2. Cinematic word-by-word text reveal (Optimized for mobile performance)
+      const isMobile = window.innerWidth < 768;
+
       gsap.fromTo(".about-reveal-word", 
         {
           opacity: 0,
           color: "rgba(255, 255, 255, 0)",
-          scale: (i) => 2.0 + Math.random() * 1.5, // Random initial scale between 2.0 and 3.5
-          filter: "blur(16px)",
+          y: isMobile ? 8 : 0,
+          scale: isMobile ? 1 : (i) => 2.0 + Math.random() * 1.5, // Random initial scale between 2.0 and 3.5
+          filter: isMobile ? "none" : "blur(16px)",
         },
         {
           color: "#FFFFFF",
           opacity: 1,
+          y: 0,
           scale: 1,
-          filter: "blur(0px)",
-          stagger: 0.1,
+          filter: isMobile ? "none" : "blur(0px)",
+          stagger: isMobile ? 0.03 : 0.1,
           ease: "power2.out",
           scrollTrigger: {
             trigger: paragraphRef.current,
-            start: "top 80%",
-            end: "bottom 55%",
-            scrub: 0.5,
+            start: isMobile ? "top 85%" : "top 80%",
+            end: isMobile ? "bottom 65%" : "bottom 55%",
+            scrub: isMobile ? false : 0.5, // Disable heavy scrub calculations on mobile
+            toggleActions: isMobile ? "play none none reverse" : undefined,
           }
         }
       );

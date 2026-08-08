@@ -28,6 +28,9 @@ export default function Hero({ loaderComplete }) {
   useEffect(() => {
     if (!loaderComplete) return;
 
+    // Disable ScrollTrigger layout pinning on mobile devices
+    if (window.innerWidth < 768) return;
+
     // Allow DOM to settle and refresh ScrollTrigger coordinates safely
     const timer = setTimeout(() => {
       const paths = document.querySelectorAll(".hero-connecting-path");
@@ -90,16 +93,15 @@ export default function Hero({ loaderComplete }) {
       {/* Corner Titles (Modern Editorial Index Style) */}
       
       {/* Top Left */}
-      <div className="absolute top-12 left-8 md:left-12 z-20 font-mono text-[9px] md:text-[10px] tracking-widest text-muted uppercase font-bold">
-        <span>Aditya Verma</span>
-        <span className="mx-2 text-accent">/</span>
-        <span className="opacity-60">Index 2026</span>
+      <div className="absolute top-12 left-4 sm:left-8 md:left-12 z-20 font-mono text-[9px] md:text-[10px] tracking-widest text-muted uppercase font-bold">
+        <span className="opacity-60">Index</span>
+        <span className="text-accent ml-1.5">2026</span>
       </div>
 
       {/* Top Right */}
-      <div className="absolute top-12 right-8 md:right-12 z-20 text-right font-mono text-[9px] md:text-[10px] tracking-widest text-muted uppercase font-bold">
-        <span className="opacity-60">Available For</span>
-        <span className="text-accent ml-1.5 animate-pulse">Freelance</span>
+      <div className="absolute top-12 right-4 sm:right-8 md:right-12 z-20 text-right font-mono text-[9px] md:text-[10px] tracking-widest text-muted uppercase font-bold">
+        <span className="hidden sm:inline opacity-60">Available For </span>
+        <span className="text-accent animate-pulse">Freelance</span>
       </div>
 
       {/* Bottom Left */}
@@ -144,9 +146,10 @@ export default function Hero({ loaderComplete }) {
           onMouseLeave={() => setIsHovered(false)}
           initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
           animate={{ opacity: 1, scale: 1, rotate: 3 }}
+          whileHover={{ scale: 1.05, rotate: 7 }}
           transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
           style={{ transformOrigin: "bottom right" }}
-          className="absolute top-[52%] left-[68%] sm:left-[64%] md:left-[60%] -translate-x-1/2 -translate-y-1/2 w-32 sm:w-40 md:w-56 aspect-[9/16] rounded-2xl overflow-hidden border border-white/20 bg-white/10 backdrop-blur-md p-1.5 shadow-2xl hover:scale-[1.05] hover:rotate-[7deg] transition-all duration-500 z-20 cursor-none"
+          className="absolute top-[52%] left-[68%] sm:left-[64%] md:left-[60%] -translate-x-1/2 -translate-y-1/2 w-32 sm:w-40 md:w-56 aspect-[9/16] rounded-2xl overflow-hidden border border-white/20 bg-white/10 backdrop-blur-md p-1.5 shadow-2xl z-20 cursor-none"
         >
           <div className="relative w-full h-full rounded-xl overflow-hidden bg-gray-100/50">
             {/* Base Portrait Image */}
