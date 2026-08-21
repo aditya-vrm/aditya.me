@@ -134,10 +134,10 @@ export default function Archive({ loaderComplete }) {
   const getGlowColor = (index) => {
     switch (index) {
       case 0: return "bg-amber-500/10";      // Virtual Mouse
-      case 1: return "bg-indigo-500/10";     // GoldenHire
-      case 2: return "bg-pink-500/10";       // Click1Studio
-      case 3: return "bg-emerald-500/10";    // DevHub
-      case 4: return "bg-cyan-500/10";       // Moody Player
+      case 1: return "bg-emerald-500/10";    // ChatGPT Clone
+      case 2: return "bg-indigo-500/10";     // GoldenHire
+      case 3: return "bg-cyan-500/10";       // DevHub
+      case 4: return "bg-pink-500/10";       // Click1Studio
       default: return "bg-accent/10";
     }
   };
